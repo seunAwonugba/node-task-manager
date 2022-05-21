@@ -11,7 +11,7 @@ const schema = new mongoose.Schema({
         type: String,
     },
     completed: {
-        default: false,
+        // default: false,
         type: Boolean,
     },
 });

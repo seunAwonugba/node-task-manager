@@ -123,10 +123,46 @@ const deleteTask = async (req, res) => {
     }
 };
 
+const upsertTask = async (req, res) => {
+    const id = req.params.id;
+    const body = req.body;
+    const options = {
+        new: true,
+        runValidators: true,
+        overwrite: true,
+    };
+
+    try {
+        const upsertedTask = await TaskModel.findByIdAndUpdate(
+            id,
+            body,
+            options
+        );
+        if (!upsertedTask) {
+            res.status(404).json({
+                success: false,
+                data: `This data cannot be found in our server`,
+            });
+            return;
+        } else {
+            res.status(200).json({
+                success: true,
+                data: upsertedTask,
+            });
+        }
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            data: `Internal server error occured. Unable to delete data caused by : ${err.message}`,
+        });
+    }
+};
+
 module.exports = {
     getAllTasks,
     createTask,
     getTaskById,
     updateTask,
     deleteTask,
+    upsertTask,
 };

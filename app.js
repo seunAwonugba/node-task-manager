@@ -18,6 +18,9 @@ app.use(express.json());
 //use the router 3.
 app.use("/api/v1/tasks", router);
 
+//our own 404 error, using express middleware
+
+//express custom 404 error
 app.all("*", (req, res) => {
     res.status(400).send("Resource not found");
 });

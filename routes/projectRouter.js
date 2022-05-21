@@ -8,6 +8,7 @@ const {
     getTaskById,
     updateTask,
     deleteTask,
+    upsertTask,
 } = require("../controllers/projectController");
 
 router.get("/", getAllTasks);
@@ -19,4 +20,5 @@ router.patch("/:id", updateTask);
 
 router.delete("/:id", deleteTask);
 
+router.put("/:id", upsertTask);
 module.exports = { router };
