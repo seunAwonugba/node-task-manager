@@ -3,6 +3,7 @@ const express = require("express");
 //import router
 
 const { router } = require("./routes/projectRouter");
+const { notExistInDb } = require("./middleware/notExistInDb");
 
 const app = express();
 const port = 3000;
@@ -19,11 +20,12 @@ app.use(express.json());
 app.use("/api/v1/tasks", router);
 
 //our own 404 error, using express middleware
+app.use(notExistInDb);
 
 //express custom 404 error
-app.all("*", (req, res) => {
-    res.status(400).send("Resource not found");
-});
+// app.all("*", (req, res) => {
+//     res.status(400).send("Resource not found");
+// });
 
 app.listen(port, host, () => {
     console.log(`Server is listening on port: http://${host}:${port}`);
