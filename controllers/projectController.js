@@ -3,6 +3,8 @@ const { TaskModel } = require("../models/model");
 
 const { asyncWrapper } = require("../middleware/async");
 
+const { customErrorFunction } = require("../errors/customError");
+
 //the essence of the async wrapper is just to abstract our async functions in our controller, since every controller uses it
 //lets just abstract it then and have it in just one place and keep call it wherever
 
@@ -42,7 +44,7 @@ const createTask = asyncWrapper(async (req, res) => {
     // }
 });
 
-const getTaskById = asyncWrapper(async (req, res) => {
+const getTaskById = asyncWrapper(async (req, res, next) => {
     // try {
     const taskId = req.params.id;
     const taskToFetchById = await TaskModel.findById(taskId);
@@ -51,11 +53,16 @@ const getTaskById = asyncWrapper(async (req, res) => {
     //so just to handle such cases, do
 
     if (!taskToFetchById) {
-        res.status(404).json({
-            success: false,
-            data: "id cannot be found in our server",
-        });
-        return;
+        //implement custom 404 error, since its also a common use case
+        // const custom404Error = new Error("Resource not found in our database");
+        // custom404Error.status = 404;
+        // return next(custom404Error);
+        // return res.status(404).json({
+        //     success: false,
+        //     data: "id cannot be found in our server",
+        // });
+
+        return next(customErrorFunction("Resource not found", 404));
     }
     res.status(200).json({
         success: true,
@@ -88,11 +95,12 @@ const updateTask = asyncWrapper(async (req, res) => {
     );
 
     if (!updatedTask) {
-        res.status(404).json({
-            success: false,
-            data: `An error occured: This task does not exist in our database`,
-        });
-        return;
+        // res.status(404).json({
+        //     success: false,
+        //     data: `An error occured: This task does not exist in our database`,
+        // });
+        // return;
+        return next(customErrorFunction("Resource not found", 404));
     } else {
         res.status(200).json({
             success: true,
@@ -114,11 +122,12 @@ const deleteTask = asyncWrapper(async (req, res) => {
     const idToDelete = await TaskModel.findByIdAndDelete(id);
 
     if (!idToDelete) {
-        res.status(404).json({
-            success: true,
-            data: `This data cannot be found in our server`,
-        });
-        return;
+        // res.status(404).json({
+        //     success: true,
+        //     data: `This data cannot be found in our server`,
+        // });
+        // return;
+        return next(customErrorFunction("Resource not found", 404));
     } else {
         res.status(200).json({
             success: true,
@@ -145,11 +154,12 @@ const upsertTask = asyncWrapper(async (req, res) => {
     // try {
     const upsertedTask = await TaskModel.findByIdAndUpdate(id, body, options);
     if (!upsertedTask) {
-        res.status(404).json({
-            success: false,
-            data: `This data cannot be found in our server`,
-        });
-        return;
+        // res.status(404).json({
+        //     success: false,
+        //     data: `This data cannot be found in our server`,
+        // });
+        // return;
+        return next(customErrorFunction("Resource not found", 404));
     } else {
         res.status(200).json({
             success: true,

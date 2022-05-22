@@ -4,9 +4,10 @@ const express = require("express");
 
 const { router } = require("./routes/projectRouter");
 const { notExistInDb } = require("./middleware/notExistInDb");
+const { errorHandlerMiddleware } = require("./middleware/errorHandler");
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 const host = "localhost";
 
 //serve the static files
@@ -19,10 +20,13 @@ app.use(express.json());
 //use the router 3.
 app.use("/api/v1/tasks", router);
 
-//our own 404 error, using express middleware
-app.use(notExistInDb);
+// our own 404 error, using express middleware
+// app.use(notExistInDb);
 
-//express custom 404 error
+//using async error handler
+app.use(errorHandlerMiddleware);
+
+// express custom 404 error
 // app.all("*", (req, res) => {
 //     res.status(400).send("Resource not found");
 // });
